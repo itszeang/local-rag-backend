@@ -1,0 +1,10 @@
+﻿# Python Sanal Ortamı
+venv/
+__pycache__/
+
+# Vektör Veritabanı
+chroma_db/
+
+# Özel Dökümanlar
+ISAD/
+*.pdf
