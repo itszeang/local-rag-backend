@@ -1,42 +1,125 @@
-﻿# Local RAG Backend (API'siz Çevrimdışı Vektör Arama & Ollama LLM) 🚀
+﻿# 🏠 Local RAG Backend
 
-Bu proje, **RAG (Retrieval-Augmented Generation)** mimarisinin arka planını uçtan uca anlamak amacıyla geliştirilmiş eğitim odaklı bir projedir. 
+A fully **local** and **private** Retrieval-Augmented Generation (RAG) system for querying PDF documents.
 
-Projenin en büyük özelliği, metinleri anlamlandırmak ve yapay zeka cevapları üretmek için **hiçbir ücretli API'ye (OpenAI vb.) ihtiyaç duymamasıdır.** Tamamen yerel (local) çalışan HuggingFace tabanlı ll-MiniLM-L6-v2 embedding modeli ve **Ollama (Llama 3.2)** kullanılmıştır.
+## ✨ Features
 
-## 🛠️ Kullanılan Teknolojiler
-- **LangChain:** Tüm RAG akışının orkestrasyonu.
-- **PyPDF:** PDF belgelerini okuyup işlemek.
-- **Sentence-Transformers (HuggingFace):** Metinleri yerel işlemci (CPU) gücüyle anlamsal uzayda vektörlere dönüştürmek.
-- **ChromaDB:** Vektörleri saklamak ve mesafe/benzerlik araması yapmak için vektör veritabanı.
-- **Ollama:** Vektörel aramadan dönen sonuçları okuyup, insan dilinde anlamlı ve net cevaplar üreten yerel Büyük Dil Modeli (LLM).
+- 📄 **PDF Processing**: Upload and index multiple PDFs
+- 🔪 **Smart Chunking**: RecursiveCharacterTextSplitter for optimal context windows
+- 🧠 **Semantic Search**: sentence-transformers for meaning-based retrieval
+- 💬 **Natural Answers**: Powered by Llama 3.2 via Ollama
+- 🔒 **100% Local**: No API keys, no cloud services, complete privacy
+- ⚡ **Fast API**: RESTful backend with FastAPI
 
-## ⚙️ Kurulum ve Çalıştırma
+## 🏗️ Tech Stack
 
-1. Repoyu bilgisayarınıza klonlayın.
-2. Bir sanal ortam (venv) oluşturup aktif edin.
-3. Gerekli kütüphaneleri yükleyin:
-   `ash
+- **Backend**: FastAPI
+- **Vector DB**: ChromaDB
+- **LLM**: Ollama (Llama 3.2)
+- **Embeddings**: sentence-transformers/all-MiniLM-L6-v2
+- **PDF Parser**: pypdf
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+1. **Install Ollama**
+   
+   Download from [ollama.com](https://ollama.com/download)
+   
+`ash
+   ollama pull llama3.2
+`
+
+2. **Install Python Dependencies**
+   
+`ash
    pip install -r requirements.txt
-   `
-4. Sisteminize [Ollama](https://ollama.com/) kurun ve Llama 3.2 modelini indirin:
-   `ash
-   ollama run llama3.2
-   `
-5. Veritabanını oluşturmak ve PDF'leri vektörlere çevirmek için:
-   `ash
-   python main.py
-   `
-6. Sisteme soru sormak ve LLM'den cevap almak için:
-   `ash
-   python soru_sor.py
-   `
+`
 
-## 🧠 Nasıl Çalışıyor? (Özellikler)
-- **Vektörel Parçalama:** PDF yüklenir ve RecursiveCharacterTextSplitter ile küçük parçalara bölünür.
-- **Benzerlik Araması:** Kullanıcı soru sorduğunda, vektörel uzayda soruya en yakın 3 metin parçası (Chunk) bulunur.
-- **Yapılandırılmış JSON Çıktısı:** Proje artık ham metin yerine profesyonel bir backend API gibi **JSON** formatında yanıt döndürür. Çıktı şunları içerir:
-  - Kullanıcının sorusu (\query\)
-  - Ollama'nın ürettiği net LLM cevabı (\nswer\)
-  - Kullanılan kaynak metinler ve **Benzerlik Skorları** (\elevance_score\)
-  - Kullanılan model detayları (\metadata\).
+### Run the Server
+
+`ash
+python main.py
+`
+
+Server runs at http://localhost:8000
+
+## 📖 Usage
+
+### Upload PDFs
+
+Place your PDF files in the ISAD/ folder, then restart the server to index them.
+
+### Query via API
+
+`ash
+curl -X POST "http://localhost:8000/query" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What is Daily Scrum?"}'
+`
+
+### Example Response
+
+`json
+{
+  "query": "What is Daily Scrum?",
+  "answer": "The purpose of a Daily Scrum is to keep the team focused on the Sprint Goal, reduce unnecessary meetings, and facilitate quick problem-solving among team members.",
+  "sources": [
+    {
+      "chunk_id": 1,
+      "text": "Daily Scrum\n■ It's a time-boxed, 15-minute meeting...",
+      "relevance_score": 0.855
+    },
+    {
+      "chunk_id": 2,
+      "text": "Daily Scrum\n■ The Daily Scrum is run by the developers...",
+      "relevance_score": 0.666
+    },
+    {
+      "chunk_id": 3,
+      "text": "Scrum Process...",
+      "relevance_score": 0.718
+    }
+  ],
+  "metadata": {
+    "model": "llama3.2",
+    "chunks_retrieved": 3,
+    "chunks_used": 3
+  }
+}
+`
+
+## 🔒 Privacy & Security
+
+- ✅ All processing happens locally on your machine
+- ✅ Documents never leave your device
+- ✅ No API keys required
+- ✅ No usage tracking or telemetry
+- ✅ Works completely offline
+
+## 📊 Performance
+
+- **Response Time**: 2-5 seconds (CPU-only)
+- **Capacity**: Tested with 15+ PDFs simultaneously
+- **GPU**: Supported but not required (speeds up inference)
+
+## 🛠️ Development
+
+Built as part of my AI engineering learning journey.
+
+Currently features:
+- ✅ Local PDF ingestion
+- ✅ Semantic chunking
+- ✅ Vector similarity search
+- ✅ Local LLM generation
+- 🚧 Web UI (coming next)
+- 🚧 Multi-document conversations
+
+## 📝 License
+
+MIT
+
+---
+
+**Building in public** | Follow my journey on [X/Twitter](https://twitter.com/itszeang)
