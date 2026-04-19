@@ -1,25 +1,24 @@
-﻿from pdf_islemleri import pdf_yukle_ve_parcala
-from vektor_veritabani import veritabani_olustur_ve_kaydet
+﻿from pdf_processor import load_and_split_pdf
+from vector_database import create_and_save_database
 import os
 
-def veritabanini_kur():
-    # İşleyeceğimiz PDF'in yolu
-    pdf_yolu = "ISAD/2-scrum.pdf"
+def setup_database():
+    pdf_path = "ISAD/2-scrum.pdf"
     
-    if not os.path.exists(pdf_yolu):
-        print(f"HATA: {pdf_yolu} dosyası bulunamadı!")
+    if not os.path.exists(pdf_path):
+        print(f"ERROR: File {pdf_path} not found!")
         return
         
-    print(f"--- RAG SÜRECİ BAŞLIYOR: {pdf_yolu} ---")
+    print(f"--- RAG PROCESS STARTING: {pdf_path} ---")
     
-    # 1. Aşama: Oku ve Parçala
-    parcalar = pdf_yukle_ve_parcala(pdf_yolu)
+    # Step 1: Load and Split
+    chunks = load_and_split_pdf(pdf_path)
     
-    # 2. Aşama: Vektörleştir ve Veritabanına Kaydet
-    veritabani_olustur_ve_kaydet(parcalar)
+    # Step 2: Vectorize and Save to Database
+    create_and_save_database(chunks)
     
-    print("\n--- İŞLEM TAMAMLANDI! ---")
-    print("Artık projemizde metinlerimizin koordinatlarını tutan 'chroma_db' adında bir klasörümüz var.")
+    print("\n--- PROCESS COMPLETED! ---")
+    print("We now have a 'chroma_db' folder holding the coordinates of our texts.")
 
 if __name__ == '__main__':
-    veritabanini_kur()
+    setup_database()
